@@ -1,0 +1,41 @@
+﻿backend-1  | INFO:     Will watch for changes in these directories: ['/app']
+backend-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+backend-1  | INFO:     Started reloader process [1] using WatchFiles
+backend-1  | /app/services/gemini.py:2: FutureWarning: 
+backend-1  | 
+backend-1  | All support for the `google.generativeai` package has ended. It will no longer be receiving 
+backend-1  | updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+backend-1  | See README for more details:
+backend-1  | 
+backend-1  | https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+backend-1  | 
+backend-1  |   import google.generativeai as genai
+backend-1  | INFO:     Started server process [8]
+backend-1  | INFO:     Waiting for application startup.
+backend-1  | INFO:     Application startup complete.
+backend-1  | INFO:     172.18.0.1:45464 - "OPTIONS /projects/ HTTP/1.1" 200 OK
+backend-1  | 2026-03-28 22:40:08,340 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+backend-1  | 2026-03-28 22:40:08,342 INFO sqlalchemy.engine.Engine [raw sql] ()
+backend-1  | 2026-03-28 22:40:09,081 INFO sqlalchemy.engine.Engine select current_schema()
+backend-1  | 2026-03-28 22:40:09,082 INFO sqlalchemy.engine.Engine [raw sql] ()
+backend-1  | 2026-03-28 22:40:09,088 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+backend-1  | 2026-03-28 22:40:09,088 INFO sqlalchemy.engine.Engine [raw sql] ()
+backend-1  | 2026-03-28 22:40:09,093 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-03-28 22:40:09,120 INFO sqlalchemy.engine.Engine INSERT INTO projects (id, name, description, created_at) VALUES ($1::UUID, $2::VARCHAR, $3::VARCHAR, $4::TIMESTAMP WITHOUT TIME ZONE)
+backend-1  | 2026-03-28 22:40:09,121 INFO sqlalchemy.engine.Engine [generated in 0.00265s] (UUID('9eb45aa3-a980-4f42-830d-5f360f59e6b9'), 'Projeto: Azure', 'Sistema de E-comerce com alto tr├ífego de requisi├º├úo...', datetime.datetime(2026, 3, 28, 22, 40, 9, 120052))
+backend-1  | 2026-03-28 22:40:09,142 INFO sqlalchemy.engine.Engine COMMIT
+backend-1  | 2026-03-28 22:40:09,155 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-03-28 22:40:09,170 INFO sqlalchemy.engine.Engine SELECT projects.id, projects.name, projects.description, projects.created_at 
+backend-1  | FROM projects 
+backend-1  | WHERE projects.id = $1::UUID
+backend-1  | 2026-03-28 22:40:09,171 INFO sqlalchemy.engine.Engine [generated in 0.00032s] (UUID('9eb45aa3-a980-4f42-830d-5f360f59e6b9'),)
+backend-1  | INFO:     172.18.0.1:45464 - "POST /projects/ HTTP/1.1" 201 Created
+backend-1  | 2026-03-28 22:40:09,208 INFO sqlalchemy.engine.Engine ROLLBACK
+backend-1  | INFO:     172.18.0.1:45464 - "OPTIONS /generate HTTP/1.1" 200 OK
+backend-1  | 2026-03-28 22:40:09,240 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+backend-1  | 2026-03-28 22:40:09,242 INFO sqlalchemy.engine.Engine SELECT projects.id AS projects_id, projects.name AS projects_name, projects.description AS projects_description, projects.created_at AS projects_created_at 
+backend-1  | FROM projects 
+backend-1  | WHERE projects.id = $1::UUID
+backend-1  | 2026-03-28 22:40:09,243 INFO sqlalchemy.engine.Engine [generated in 0.00029s] (UUID('9eb45aa3-a980-4f42-830d-5f360f59e6b9'),)
+backend-1  | 2026-03-28 22:40:11,817 INFO sqlalchemy.engine.Engine ROLLBACK
+backend-1  | INFO:     172.18.0.1:45474 - "POST /generate HTTP/1.1" 500 Internal Server Error

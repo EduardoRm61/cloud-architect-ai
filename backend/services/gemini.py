@@ -63,7 +63,7 @@ class GeminiService:
         builder = PromptBuilder(description, provider, filters)
         prompt = builder.build()
         
-        model = genai.GenerativeModel("gemini-1.5-pro", system_instruction="You are an expert cloud solutions architect. Provide strictly structured bare JSON output as requested.")
+        model = genai.GenerativeModel("gemini-2.5-flash", system_instruction="You are an expert cloud solutions architect. Provide strictly structured bare JSON output as requested.")
         response = await model.generate_content_async(prompt)
         
         parser = ResponseParser()
