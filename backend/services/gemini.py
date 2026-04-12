@@ -66,16 +66,21 @@ class ResponseParser:
         # Engine robusdo: Compilar o Mermaid de maneira estruturada no Backend!
         mermaid_code = "graph TD\n"
         for node in validated.mermaid_diagram.nodes:
-            safe_id = "".join(c for c in node.id if c.isalnum() or c == "_")
-            if not safe_id: safe_id = "node_id"
+            # Prefix with 'n_' to prevent ANY collision with Mermaid reserved words
+            safe_id = "n_" + "".join(c for c in node.id if c.isalnum() or c == "_")
             safe_label = node.label.replace('"', '').replace("'", "")
             mermaid_code += f'    {safe_id}["{safe_label}"]\n'
             
         for edge in validated.mermaid_diagram.edges:
-            safe_src = "".join(c for c in edge.from_node if c.isalnum() or c == "_")
-            safe_tgt = "".join(c for c in edge.to_node if c.isalnum() or c == "_")
-            safe_edge_label = edge.label.replace('"', '').replace('>', '').replace('<', '')
-            mermaid_code += f'    {safe_src} -->|{safe_edge_label}| {safe_tgt}\n'
+            safe_src = "n_" + "".join(c for c in edge.from_node if c.isalnum() or c == "_")
+            safe_tgt = "n_" + "".join(c for c in edge.to_node if c.isalnum() or c == "_")
+            
+            # Remove strict HTML entities that may have leaked, but ALLOW natural punctuation
+            clean_label = edge.label.replace('"', "'").replace('<', '').replace('>', '')
+            
+            # Wrap the edge label in double quotes to force Mermaid parser to treat it as string
+            # This completely bypassed the 'PS' parser bug when using parens/slashes!
+            mermaid_code += f'    {safe_src} -->|"{clean_label}"| {safe_tgt}\n'
 
         result = validated.model_dump()
         result["mermaid_code"] = mermaid_code

@@ -53,9 +53,22 @@ class AlternativeSchema(BaseModel):
     name: str
     trade_off: str
 
+class MermaidNodeSchema(BaseModel):
+    id: str
+    label: str
+
+class MermaidEdgeSchema(BaseModel):
+    from_node: str
+    to_node: str
+    label: str
+
+class DiagramDefinitionSchema(BaseModel):
+    nodes: List[MermaidNodeSchema]
+    edges: List[MermaidEdgeSchema]
+
 class GeminiOutputSchema(BaseModel):
     architecture: ArchitectureSchema
-    mermaid_code: str
+    mermaid_diagram: DiagramDefinitionSchema
     cost_estimate: List[CostEstimateItemSchema]
     total_monthly_cost_usd: str
     alternatives: List[AlternativeSchema]
