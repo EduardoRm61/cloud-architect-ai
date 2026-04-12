@@ -27,7 +27,15 @@ Please return ONLY a valid JSON object strictly matching this schema:
       {"name": "...", "purpose": "...", "justification": "..."}
     ]
   },
-  "mermaid_code": "...",
+  "mermaid_diagram": {
+    "nodes": [
+      {"id": "apiGw", "label": "API Gateway"},
+      {"id": "db", "label": "PostgreSQL"}
+    ],
+    "edges": [
+      {"from_node": "apiGw", "to_node": "db", "label": "Lê/Escreve dados"}
+    ]
+  },
   "cost_estimate": [
     {"service": "...", "monthly_cost_usd": 0.0, "notes": "..."}
   ],
@@ -36,7 +44,7 @@ Please return ONLY a valid JSON object strictly matching this schema:
     {"name": "...", "trade_off": "..."}
   ]
 }
-Make sure the mermaid_code contains a valid Mermaid graph string, starting with 'graph TD' or 'architecture'. DO NOT WRAP THE JSON IN MARKDOWN BLOCKS. Return only the raw JSON.
+DO NOT RETURN ANY MERMAID CODE STRING. Only return the structured JSON with `mermaid_diagram` containing abstract `nodes` and `edges`. DO NOT WRAP THE JSON IN MARKDOWN BLOCKS. Return only the raw JSON.
 """
         return prompt
 
@@ -55,7 +63,25 @@ class ResponseParser:
         data = json.loads(cleaned)
         validated = GeminiOutputSchema(**data)
         
-        return validated.model_dump()
+        # Engine robusdo: Compilar o Mermaid de maneira estruturada no Backend!
+        mermaid_code = "graph TD\n"
+        for node in validated.mermaid_diagram.nodes:
+            safe_id = "".join(c for c in node.id if c.isalnum() or c == "_")
+            if not safe_id: safe_id = "node_id"
+            safe_label = node.label.replace('"', '').replace("'", "")
+            mermaid_code += f'    {safe_id}["{safe_label}"]\n'
+            
+        for edge in validated.mermaid_diagram.edges:
+            safe_src = "".join(c for c in edge.from_node if c.isalnum() or c == "_")
+            safe_tgt = "".join(c for c in edge.to_node if c.isalnum() or c == "_")
+            safe_edge_label = edge.label.replace('"', '').replace('>', '').replace('<', '')
+            mermaid_code += f'    {safe_src} -->|{safe_edge_label}| {safe_tgt}\n'
+
+        result = validated.model_dump()
+        result["mermaid_code"] = mermaid_code
+        del result["mermaid_diagram"]
+        
+        return result
 
 class GeminiService:
     @staticmethod
