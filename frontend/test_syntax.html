@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div class="mermaid">
+graph TD
+    user["Usuário"]
+    route53["Amazon Route 53"]
+    amplify_hosting["AWS Amplify Hosting"]
+    cloudfront["Amazon CloudFront (Integrated)"]
+    acm["AWS Certificate Manager"]
+    lambda["AWS Lambda (Next.js API/SSR)"]
+    dynamodb["Amazon DynamoDB (Optional)"]
+    user -->|Consulta DNS| route53
+    route53 -->|Aponta domínio para| amplify_hosting
+    amplify_hosting -->|Usa CDN| cloudfront
+    cloudfront -->|Serve conteúdo do Origin| amplify_hosting
+    amplify_hosting -->|Gerencia Certificado SSL| acm
+    cloudfront -->|Termina HTTPS com| acm
+    amplify_hosting -->|Invoca API Routes/SSR| lambda
+    lambda -->|Lê/Escreve dados (Opcional)| dynamodb
+  </div>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</body>
+</html>

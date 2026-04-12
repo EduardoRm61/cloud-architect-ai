@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
   return (
@@ -10,13 +11,14 @@ export function Header() {
             <span>Cloud Architect AI</span>
           </Link>
         </div>
-        <nav className="flex items-center gap-6 text-sm font-medium text-secondary">
+        <nav className="flex items-center gap-4 md:gap-6 text-sm font-medium text-foreground/80">
           <Link href="/" className="transition-colors hover:text-foreground">
             Gerar
           </Link>
           <Link href="/history" className="transition-colors hover:text-foreground">
             Histórico
           </Link>
+          <ThemeToggle />
         </nav>
       </div>
     </header>
