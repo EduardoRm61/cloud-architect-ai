@@ -13,6 +13,37 @@ export interface GenerateParams {
   filters?: GenerateFilters;
 }
 
+export interface ServiceRecommendation {
+  name: string;
+  purpose: string;
+  justification: string;
+}
+
+export interface CostItem {
+  service: string;
+  monthly_cost_usd: number | string;
+  notes: string;
+}
+
+export interface AlternativeItem {
+  name: string;
+  trade_off: string;
+}
+
+export interface ArchitectureResult {
+  architecture?: {
+    description?: string;
+    services?: ServiceRecommendation[];
+  };
+  cost_estimate?: {
+    items?: CostItem[];
+  };
+  total_monthly_cost?: string | number;
+  alternatives?: {
+    items?: AlternativeItem[];
+  };
+}
+
 export async function createProject(name: string, description?: string) {
   const response = await fetch(`${API_BASE_URL}/projects/`, {
     method: "POST",
@@ -27,7 +58,7 @@ export async function createProject(name: string, description?: string) {
   return response.json();
 }
 
-export async function generateArchitecture(params: GenerateParams) {
+export async function generateArchitecture(params: GenerateParams): Promise<ArchitectureResult> {
   const project = await createProject(
     `Projeto: ${params.provider}`,
     params.description.substring(0, 100) + "..."

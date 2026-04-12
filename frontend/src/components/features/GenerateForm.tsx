@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { generateArchitecture, GenerateParams } from "@/lib/api";
+import { generateArchitecture, GenerateParams, ArchitectureResult } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { ResultView } from "./ResultView";
@@ -42,14 +42,14 @@ const formSchema = z.object({
   scale: z.string().optional(),
   availability: z.string().optional(),
   appType: z.string().optional(),
-  maxBudget: z.coerce.number().optional().or(z.literal("")),
+  maxBudget: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export function GenerateForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ArchitectureResult | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -82,8 +82,8 @@ export function GenerateForm() {
       const res = await generateArchitecture(params);
       setResult(res);
       toast.success("Arquitetura gerada com sucesso!");
-    } catch (error: any) {
-      toast.error(error.message || "Ocorreu um erro ao gerar a arquitetura.");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Ocorreu um erro ao gerar a arquitetura.");
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +131,7 @@ export function GenerateForm() {
             )}
           />
 
-          <Accordion type="single" collapsible className="w-full border rounded-lg px-4 bg-white">
+          <Accordion className="w-full border rounded-lg px-4 bg-white">
             <AccordionItem value="filters" className="border-none">
               <AccordionTrigger className="hover:no-underline text-secondary-foreground font-medium">
                 Filtros avançados
