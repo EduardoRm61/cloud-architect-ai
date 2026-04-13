@@ -44,6 +44,26 @@ export interface ArchitectureResult {
   };
 }
 
+export interface ProjectRecord {
+  id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+}
+
+export interface GenerationRecord {
+  id: string;
+  project_id: string;
+  description: string;
+  provider: string;
+  architecture: any;
+  mermaid_code: string;
+  cost_estimate: any;
+  total_monthly_cost: string;
+  alternatives: any;
+  created_at: string;
+}
+
 export async function createProject(name: string, description?: string) {
   const response = await fetch(`${API_BASE_URL}/projects/`, {
     method: "POST",
@@ -55,6 +75,19 @@ export async function createProject(name: string, description?: string) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.detail || "Failed to create project");
   }
+  return response.json();
+}
+
+export async function getProjects(): Promise<ProjectRecord[]> {
+  const response = await fetch(`${API_BASE_URL}/projects/`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch projects");
+  }
+  
   return response.json();
 }
 
@@ -78,6 +111,34 @@ export async function generateArchitecture(params: GenerateParams): Promise<Arch
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.detail || "Failed to generate architecture");
+  }
+  
+  return response.json();
+}
+
+export async function getGenerations(): Promise<GenerationRecord[]> {
+  const response = await fetch(`${API_BASE_URL}/generations/`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to fetch history");
+  }
+  
+  return response.json();
+}
+
+export async function getGeneration(id: string): Promise<GenerationRecord> {
+  const response = await fetch(`${API_BASE_URL}/generations/${id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to fetch generation details");
   }
   
   return response.json();
