@@ -19,6 +19,11 @@ class PromptBuilder:
             prompt += f"Constraints/Filters: {json.dumps(self.filters)}\n"
         
         prompt += """
+IMPORTANT RULES FOR FAIR COMPARISON:
+1. "Apples-to-Apples": Try to maintain the exact same architectural pattern across any provider you evaluate. If you assume a serverless pattern for AWS (e.g. Lambda + API Gateway), apply the equivalent serverless pattern for Azure (e.g. Azure Functions) and GCP (e.g. Cloud Functions/Cloud Run) to ensure fair cost comparison.
+2. Never default to extremely expensive Enterprise/Premium tiers (like Azure API Management Premium) unless explicitly required by the user's traffic constraints. Default to standard/consumption tiers.
+3. Keep the responses concise, practical, and highly focused on the specific use-case without marketing fluff.
+
 Please return ONLY a valid JSON object strictly matching this schema:
 {
   "architecture": {
@@ -94,7 +99,7 @@ class GeminiService:
         builder = PromptBuilder(description, provider, filters)
         prompt = builder.build()
         
-        system_instruction = "You are an expert cloud solutions architect. Provide strictly structured bare JSON output as requested. ALL descriptive text, names, purposes, and justifications MUST be written in Brazilian Portuguese (pt-BR)."
+        system_instruction = "You are an expert cloud solutions architect. Provide strictly structured bare JSON output as requested. ALL descriptive text, names, purposes, and justifications MUST be written in Brazilian Portuguese (pt-BR). CRITICAL: Ensure 'apples-to-apples' comparisons. Do not use expensive Enterprise tiers arbitrarily. Favor Serverless/Consumption models baseline."
         model = genai.GenerativeModel("gemini-2.5-flash", system_instruction=system_instruction)
         response = await model.generate_content_async(prompt)
         
