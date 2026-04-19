@@ -143,3 +143,31 @@ export async function getGeneration(id: string): Promise<GenerationRecord> {
   
   return response.json();
 }
+
+export interface CompareParams {
+  description: string;
+  filters?: GenerateFilters;
+}
+
+export interface CompareArchitectureResult extends ArchitectureResult {
+  provider: string;
+  error?: string;
+}
+
+export async function compareArchitectures(params: CompareParams): Promise<CompareArchitectureResult[]> {
+  const response = await fetch(`${API_BASE_URL}/generate/compare`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      description: params.description,
+      filters: params.filters || {},
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to compare architectures");
+  }
+  
+  return response.json();
+}
