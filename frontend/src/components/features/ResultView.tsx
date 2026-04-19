@@ -13,10 +13,10 @@ export function ResultView({ result }: ResultViewProps) {
   const architecture = result.architecture || {};
   const services = architecture.services || [];
   
-  const costItems = result.cost_estimate?.items || [];
-  const totalCost = result.total_monthly_cost || "N/D";
+  const costItems = Array.isArray(result.cost_estimate) ? result.cost_estimate : (result.cost_estimate?.items || []);
+  const totalCost = result.total_monthly_cost_usd || result.total_monthly_cost || "N/D";
   
-  const alternativesItems = result.alternatives?.items || [];
+  const alternativesItems = Array.isArray(result.alternatives) ? result.alternatives : (result.alternatives?.items || []);
 
   return (
     <div className="w-full mt-10 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
