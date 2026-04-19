@@ -13,7 +13,7 @@ class PromptBuilder:
         self.filters = filters or {}
     
     def build(self) -> str:
-        prompt = f"Design a cloud architecture on {self.provider} for the following use case:\n"
+        prompt = f"Crie uma arquitetura de nuvem detalhada em português do Brasil (pt-BR) no provedor {self.provider} para o seguinte caso de uso:\n"
         prompt += f"Description: {self.description}\n"
         if self.filters:
             prompt += f"Constraints/Filters: {json.dumps(self.filters)}\n"
@@ -94,7 +94,8 @@ class GeminiService:
         builder = PromptBuilder(description, provider, filters)
         prompt = builder.build()
         
-        model = genai.GenerativeModel("gemini-2.5-flash", system_instruction="You are an expert cloud solutions architect. Provide strictly structured bare JSON output as requested.")
+        system_instruction = "You are an expert cloud solutions architect. Provide strictly structured bare JSON output as requested. ALL descriptive text, names, purposes, and justifications MUST be written in Brazilian Portuguese (pt-BR)."
+        model = genai.GenerativeModel("gemini-2.5-flash", system_instruction=system_instruction)
         response = await model.generate_content_async(prompt)
         
         parser = ResponseParser()

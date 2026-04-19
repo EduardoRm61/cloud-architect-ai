@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List, Optional
 from uuid import UUID
+import asyncio
 from database import get_db
 import models, schemas
 from services.gemini import GeminiService
@@ -39,6 +40,25 @@ async def create_generation(request: schemas.GenerationRequest, db: AsyncSession
     await db.commit()
     await db.refresh(db_generation)
     return db_generation
+
+@generate_router.post("/generate/compare", status_code=200)
+async def generate_compare(request: schemas.CompareRequest):
+    providers = ["AWS", "GCP", "Azure"]
+    
+    async def fetch_for_provider(provider: str):
+        try:
+            result = await GeminiService.generate_architecture(
+                description=request.description,
+                provider=provider,
+                filters=request.filters
+            )
+            result["provider"] = provider
+            return result
+        except Exception as e:
+            return {"provider": provider, "error": str(e)}
+
+    results = await asyncio.gather(*(fetch_for_provider(p) for p in providers))
+    return results
 
 @router.get("/", response_model=List[schemas.GenerationResponse])
 async def list_generations(project_id: Optional[UUID] = None, db: AsyncSession = Depends(get_db)):

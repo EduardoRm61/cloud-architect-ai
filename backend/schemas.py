@@ -20,6 +20,10 @@ class GenerationRequest(BaseModel):
     provider: str
     filters: Optional[dict] = None
 
+class CompareRequest(BaseModel):
+    description: str
+    filters: Optional[dict] = None
+
 class GenerationResponse(BaseModel):
     id: UUID
     project_id: UUID
