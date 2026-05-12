@@ -57,7 +57,14 @@ async def generate_compare(request: schemas.CompareRequest):
         except Exception as e:
             return {"provider": provider, "error": str(e)}
 
-    results = await asyncio.gather(*(fetch_for_provider(p) for p in providers))
+    results = []
+    for i, p in enumerate(providers):
+        if i > 0:
+            # Atraso intencional para não estourar a cota gratuita do Gemini (5 req/min)
+            await asyncio.sleep(4)
+        res = await fetch_for_provider(p)
+        results.append(res)
+        
     return results
 
 @router.get("/", response_model=List[schemas.GenerationResponse])
