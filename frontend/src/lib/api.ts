@@ -39,6 +39,7 @@ export interface ArchitectureResult {
     items?: CostItem[];
   };
   total_monthly_cost?: string | number;
+  total_monthly_cost_usd?: string | number;
   alternatives?: {
     items?: AlternativeItem[];
   };
