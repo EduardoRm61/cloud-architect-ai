@@ -5,6 +5,7 @@ import { getGenerations, getProjects, GenerationRecord, ProjectRecord } from '@/
 import { ProjectGroup } from './ProjectGroup';
 import { Loader2, Cloud, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export function HistoryList() {
   const [generations, setGenerations] = useState<GenerationRecord[]>([]);
@@ -23,7 +24,9 @@ export function HistoryList() {
         setGenerations(gens || []);
         setProjects(projs || []);
       } catch (err: any) {
-        setError(err.message || 'Erro ao carregar histórico');
+        const msg = err.message || 'Erro ao carregar histórico';
+        setError(msg);
+        toast.error(msg);
       } finally {
         setIsLoading(false);
       }

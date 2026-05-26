@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { ResultView } from "./ResultView";
 import { CompareView } from "./CompareView";
+import { ExportButtons } from "./ExportButtons";
 
 import {
   Form,
@@ -51,7 +52,6 @@ export function GenerateForm() {
   const [isComparing, setIsComparing] = useState(false);
   const [result, setResult] = useState<ArchitectureResult | null>(null);
   const [compareResults, setCompareResults] = useState<CompareArchitectureResult[] | null>(null);
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -291,20 +291,34 @@ export function GenerateForm() {
         </form>
       </Form>
 
-      {/* Exibição temporária do Loading Skeleton */}
       {isLoading && (
         <div className="space-y-4 pt-8">
           <Skeleton className="h-8 w-1/3" />
           <Skeleton className="h-[200px] w-full" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-4/6" />
+        </div>
+      )}
+
+      {!result && !compareResults && !isLoading && (
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center border border-dashed rounded-2xl bg-slate-50/50 mt-2">
+          <div className="text-5xl mb-4 opacity-60 select-none">☁️</div>
+          <p className="text-slate-500 text-sm max-w-xs">
+            Preencha o formulário acima e clique em <strong>Gerar Arquitetura</strong> para ver seu diagrama aqui.
+          </p>
         </div>
       )}
 
       {result && !isLoading && !isComparing && (
-        <ResultView result={result} />
+        <>
+          <ResultView result={result} />
+          <div className="flex justify-end pt-2">
+            <ExportButtons result={result} />
+          </div>
+        </>
       )}
-      
+
       {compareResults && !isLoading && isComparing && (
         <CompareView results={compareResults} />
       )}

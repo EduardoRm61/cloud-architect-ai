@@ -47,12 +47,16 @@ export function MermaidRenderer({ code }: MermaidRendererProps) {
         const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
         let { svg } = await mermaid.render(id, cleanCode);
         
-        // Em versões novas, o Mermaid não levanta Exception em sintaxe inválida, ele devolve 
-        // um SVG bonitinho contendo o texto legível "Syntax error in text".
-        // É CRÍTICO buscar por etiquetas XML estritas, pois as CSS definitions do Mermaid 
-        // contêm a palavra 'Syntax error' em TODAS as renderizações de sucesso.
-        if (svg.includes(">Syntax error in text<") || svg.includes(">Syntax error<")) {
-          throw new Error("Mermaid gerou um Error-SVG silencioso ao invés do diagrama.");
+        // Mermaid v11 não lança exceção em sintaxe inválida — retorna um SVG de erro
+        // com o texto "Syntax error in text" renderizado (com emoji de bomba).
+        // Checamos a frase completa; a palavra isolada "Syntax error" aparece em CSS
+        // de todas as renders bem-sucedidas, então não podemos usar só ela.
+        if (
+          svg.includes("Syntax error in text") ||
+          svg.includes(">Syntax error<") ||
+          svg.includes("Parse error")
+        ) {
+          throw new Error("Diagrama com sintaxe inválida gerado pela IA.");
         }
         
         if (isMounted) {

@@ -83,6 +83,16 @@ function ComparisonSummary({ results, cheapestProvider }: { results: CompareArch
 }
 
 export function CompareView({ results }: { results: CompareArchitectureResult[] }) {
+  const validResults = (results && Array.isArray(results) ? results : []).filter(r => r && r.provider);
+  const defaultTab = validResults.length > 0 ? validResults[0].provider : "AWS";
+  const [activeTab, setActiveTab] = useState(defaultTab);
+
+  useEffect(() => {
+    if (validResults.length > 0 && !validResults.find(r => r.provider === activeTab)) {
+      setActiveTab(validResults[0].provider);
+    }
+  }, [results, activeTab, validResults]);
+
   if (!results || !Array.isArray(results) || results.length === 0) {
     return (
       <div className="p-6 bg-red-50 text-red-600 rounded-lg border border-red-200 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -106,17 +116,6 @@ export function CompareView({ results }: { results: CompareArchitectureResult[] 
       }
     }
   });
-
-  const validResults = results.filter(r => r && r.provider);
-  const defaultTab = validResults.length > 0 ? validResults[0].provider : "AWS";
-  const [activeTab, setActiveTab] = useState(defaultTab);
-
-  // Garantir que a aba ativa mude se os resultados mudarem
-  useEffect(() => {
-    if (validResults.length > 0 && !validResults.find(r => r.provider === activeTab)) {
-      setActiveTab(validResults[0].provider);
-    }
-  }, [results, activeTab, validResults]);
 
   const activeResult = validResults.find(r => r.provider === activeTab);
 

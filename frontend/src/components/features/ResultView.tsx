@@ -8,26 +8,28 @@ interface ResultViewProps {
 export function ResultView({ result }: ResultViewProps) {
   if (!result) return null;
 
-  // Extração segura porque o pipeline assíncrono envelopa
-  // cost_estimate e alternatives dentro de `{ items: [...] }` no BD.
   const architecture = result.architecture || {};
   const services = architecture.services || [];
-  
-  const costItems = Array.isArray(result.cost_estimate) ? result.cost_estimate : (result.cost_estimate?.items || []);
-  const totalCost = result.total_monthly_cost_usd || result.total_monthly_cost || "N/D";
-  
-  const alternativesItems = Array.isArray(result.alternatives) ? result.alternatives : (result.alternatives?.items || []);
+
+  const costItems = Array.isArray(result.cost_estimate)
+    ? result.cost_estimate
+    : (result.cost_estimate?.items || []);
+  const totalCost = result.total_monthly_cost_usd || result.total_monthly_cost || 'N/D';
+
+  const alternativesItems = Array.isArray(result.alternatives)
+    ? result.alternatives
+    : (result.alternatives?.items || []);
 
   return (
     <div className="w-full mt-10 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      
+
       {/* 1. Arquitetura */}
       <section className="bg-card rounded-xl shadow-sm border p-6 md:p-8">
         <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
           <span className="bg-primary/10 p-2 rounded-lg">☁️</span> Visão Geral da Arquitetura
         </h2>
         <p className="text-secondary-foreground text-lg leading-relaxed">
-          {architecture.description || "Descrição não providenciada pela IA."}
+          {architecture.description || 'Descrição não providenciada pela IA.'}
         </p>
       </section>
 
@@ -36,24 +38,28 @@ export function ResultView({ result }: ResultViewProps) {
         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
           🚀 Serviços Recomendados
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {services.map((svc: any, idx: number) => (
-            <div key={idx} className="bg-white rounded-xl shadow-sm border p-5 hover:border-primary/50 transition-colors">
-              <h4 className="font-semibold text-lg text-primary mb-3 pb-2 border-b">{svc.name}</h4>
-              <p className="text-sm font-medium mb-2">
-                <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">Propósito</span>
-                {svc.purpose}
-              </p>
-              <p className="text-sm text-secondary-foreground">
-                <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">Justificativa</span> 
-                {svc.justification}
-              </p>
-            </div>
-          ))}
-        </div>
+        {services.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {services.map((svc: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-xl shadow-sm border p-5 hover:border-primary/50 transition-colors">
+                <h4 className="font-semibold text-lg text-primary mb-3 pb-2 border-b">{svc.name}</h4>
+                <p className="text-sm font-medium mb-2">
+                  <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">Propósito</span>
+                  {svc.purpose}
+                </p>
+                <p className="text-sm text-secondary-foreground">
+                  <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">Justificativa</span>
+                  {svc.justification}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground italic text-sm py-4">Nenhum serviço listado para este cenário.</p>
+        )}
       </section>
 
-      {/* 2.5 Diagrama Visual (Mermaid) */}
+      {/* 3. Diagrama Visual (Mermaid) */}
       {result.mermaid_code && (
         <section>
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -63,7 +69,7 @@ export function ResultView({ result }: ResultViewProps) {
         </section>
       )}
 
-      {/* 3. Estimativa de Custo */}
+      {/* 4. Estimativa de Custo */}
       <section className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <div className="p-6 border-b bg-primary/5 flex items-center justify-between">
           <h3 className="text-xl font-bold text-primary flex items-center gap-2">
@@ -102,7 +108,7 @@ export function ResultView({ result }: ResultViewProps) {
         </div>
       </section>
 
-      {/* 4. Alternativas */}
+      {/* 5. Alternativas */}
       <section>
         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
           ⚖️ Alternativas Consideradas
