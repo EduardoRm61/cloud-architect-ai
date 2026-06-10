@@ -1,5 +1,7 @@
 import React from 'react';
+import { Cloud, Layers, Share2, GitCompare } from 'lucide-react';
 import { MermaidRenderer } from './MermaidRenderer';
+import { FinOpsView } from './FinOpsView';
 
 interface ResultViewProps {
   result: any;
@@ -20,29 +22,37 @@ export function ResultView({ result }: ResultViewProps) {
     ? result.alternatives
     : (result.alternatives?.items || []);
 
+  const finopsTips = Array.isArray(result.finops_tips) ? result.finops_tips : [];
+
   return (
     <div className="w-full mt-10 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
 
-      {/* 1. Arquitetura */}
+      {/* 1. Visão Geral */}
       <section className="bg-card rounded-xl shadow-sm border p-6 md:p-8">
-        <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-          <span className="bg-primary/10 p-2 rounded-lg">☁️</span> Visão Geral da Arquitetura
+        <h2 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <div className="p-1.5 bg-primary/10 rounded-md">
+            <Cloud size={16} className="text-primary" />
+          </div>
+          Visão Geral da Arquitetura
         </h2>
-        <p className="text-secondary-foreground text-lg leading-relaxed">
+        <p className="text-secondary-foreground text-base leading-relaxed">
           {architecture.description || 'Descrição não providenciada pela IA.'}
         </p>
       </section>
 
       {/* 2. Serviços Recomendados */}
       <section>
-        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-          🚀 Serviços Recomendados
+        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <div className="p-1.5 bg-primary/10 rounded-md">
+            <Layers size={16} className="text-primary" />
+          </div>
+          Serviços Recomendados
         </h3>
         {services.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {services.map((svc: any, idx: number) => (
-              <div key={idx} className="bg-white rounded-xl shadow-sm border p-5 hover:border-primary/50 transition-colors">
-                <h4 className="font-semibold text-lg text-primary mb-3 pb-2 border-b">{svc.name}</h4>
+              <div key={idx} className="bg-white rounded-xl shadow-sm border p-5 hover:border-primary/40 hover:shadow-md transition-all">
+                <h4 className="font-semibold text-base text-primary mb-3 pb-2 border-b">{svc.name}</h4>
                 <p className="text-sm font-medium mb-2">
                   <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">Propósito</span>
                   {svc.purpose}
@@ -59,63 +69,37 @@ export function ResultView({ result }: ResultViewProps) {
         )}
       </section>
 
-      {/* 3. Diagrama Visual (Mermaid) */}
+      {/* 3. Diagrama */}
       {result.mermaid_code && (
         <section>
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-            🎨 Diagrama da Arquitetura
+          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <div className="p-1.5 bg-primary/10 rounded-md">
+              <Share2 size={16} className="text-primary" />
+            </div>
+            Diagrama da Arquitetura
           </h3>
           <MermaidRenderer code={result.mermaid_code} />
         </section>
       )}
 
-      {/* 4. Estimativa de Custo */}
-      <section className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="p-6 border-b bg-primary/5 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-primary flex items-center gap-2">
-            💰 Estimativa de Custo Mensal
-          </h3>
-          <span className="bg-white px-4 py-1.5 rounded-full text-sm font-mono font-bold text-primary border shadow-sm">
-            {totalCost}
-          </span>
-        </div>
-        <div className="p-0 overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-muted/80 text-muted-foreground font-semibold">
-              <tr>
-                <th className="px-6 py-4">Serviço</th>
-                <th className="px-6 py-4">Custo Estimado (USD)</th>
-                <th className="px-6 py-4">Observações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y text-secondary-foreground">
-              {costItems.map((item: any, idx: number) => (
-                <tr key={idx} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-medium text-foreground">{item.service}</td>
-                  <td className="px-6 py-4 font-mono font-medium">${item.monthly_cost_usd}</td>
-                  <td className="px-6 py-4">{item.notes}</td>
-                </tr>
-              ))}
-              {costItems.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="px-6 py-8 text-center text-muted-foreground">
-                    Nenhum serviço mapeado com custos pela IA.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {/* 4. FinOps */}
+      <FinOpsView
+        costItems={costItems}
+        totalCost={totalCost}
+        finopsTips={finopsTips}
+      />
 
       {/* 5. Alternativas */}
       <section>
-        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-          ⚖️ Alternativas Consideradas
+        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <div className="p-1.5 bg-primary/10 rounded-md">
+            <GitCompare size={16} className="text-primary" />
+          </div>
+          Alternativas Consideradas
         </h3>
         <div className="grid grid-cols-1 gap-3">
           {alternativesItems.map((alt: any, idx: number) => (
-            <div key={idx} className="bg-white rounded-xl shadow-sm border border-l-4 border-l-primary/60 p-5">
+            <div key={idx} className="bg-white rounded-xl shadow-sm border border-l-4 border-l-primary/50 p-5 hover:shadow-md transition-shadow">
               <h4 className="font-semibold text-foreground mb-1">{alt.name}</h4>
               <p className="text-sm text-secondary-foreground">{alt.trade_off}</p>
             </div>

@@ -70,9 +70,15 @@ class DiagramDefinitionSchema(BaseModel):
     nodes: List[MermaidNodeSchema]
     edges: List[MermaidEdgeSchema]
 
+class FinOpsTipSchema(BaseModel):
+    tip: str
+    potential_saving: str
+    category: str
+
 class GeminiOutputSchema(BaseModel):
     architecture: ArchitectureSchema
     mermaid_diagram: DiagramDefinitionSchema
     cost_estimate: List[CostEstimateItemSchema]
     total_monthly_cost_usd: str
     alternatives: List[AlternativeSchema]
+    finops_tips: List[FinOpsTipSchema] = []

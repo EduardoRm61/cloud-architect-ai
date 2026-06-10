@@ -47,8 +47,12 @@ Please return ONLY a valid JSON object strictly matching this schema:
   "total_monthly_cost_usd": "...",
   "alternatives": [
     {"name": "...", "trade_off": "..."}
+  ],
+  "finops_tips": [
+    {"tip": "...", "potential_saving": "até X%", "category": "Instâncias Reservadas"}
   ]
 }
+FINOPS TIPS RULES: Generate 3 to 5 practical `finops_tips` specific to the chosen services. Each tip must include: `tip` (actionable advice in pt-BR), `potential_saving` (e.g. "até 30%", "~$20/mês"), `category` (one of: "Instâncias Reservadas", "Right-Sizing", "Serverless", "Tier Gratuito", "Armazenamento Inteligente", "Auto Scaling", "Monitoramento de Custos").
 DO NOT RETURN ANY MERMAID CODE STRING. Only return the structured JSON with `mermaid_diagram` containing abstract `nodes` and `edges`. DO NOT WRAP THE JSON IN MARKDOWN BLOCKS. Return only the raw JSON.
 """
         return prompt

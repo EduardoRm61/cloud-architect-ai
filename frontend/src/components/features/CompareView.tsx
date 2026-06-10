@@ -1,6 +1,16 @@
 import { CompareArchitectureResult } from "@/lib/api";
 import { useState, useEffect } from "react";
 import { ResultView } from "./ResultView";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 function extractCostValue(costString: string | number | undefined): number {
   if (costString === undefined || costString === null) return Infinity;
@@ -13,6 +23,61 @@ function extractCostValue(costString: string | number | undefined): number {
   }
   
   return Infinity;
+}
+
+const PROVIDER_COLORS: Record<string, string> = {
+  AWS:   "#FF9900",
+  GCP:   "#4285F4",
+  Azure: "#00A4EF",
+};
+
+function CostBarChart({ results, cheapestProvider }: { results: CompareArchitectureResult[], cheapestProvider: string }) {
+  const data = results
+    .filter((r) => !r.error)
+    .map((r) => ({
+      provider: r.provider,
+      custo: extractCostValue(r.total_monthly_cost_usd || r.total_monthly_cost),
+    }))
+    .filter((d) => d.custo !== Infinity);
+
+  if (data.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-xl border shadow-sm p-6 mb-6">
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+        Comparação de Custo Mensal (USD)
+      </p>
+      <ResponsiveContainer width="100%" height={180}>
+        <BarChart data={data} barCategoryGap="35%">
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+          <XAxis dataKey="provider" tick={{ fontSize: 13, fontWeight: 600 }} axisLine={false} tickLine={false} />
+          <YAxis
+            tickFormatter={(v) => `$${v}`}
+            tick={{ fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+            width={55}
+          />
+          <Tooltip
+            formatter={(value) => [`$${Number(value).toFixed(2)}/mês`, "Custo estimado"]}
+            cursor={{ fill: "#f8f8ff" }}
+          />
+          <Bar dataKey="custo" radius={[6, 6, 0, 0]}>
+            {data.map((entry, idx) => (
+              <Cell
+                key={idx}
+                fill={PROVIDER_COLORS[entry.provider] ?? "#7C8CFF"}
+                opacity={entry.provider === cheapestProvider ? 1 : 0.65}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+      <p className="text-xs text-center text-muted-foreground mt-2">
+        ✅ Barra mais opaca = provedor mais econômico
+      </p>
+    </div>
+  );
 }
 
 function ComparisonSummary({ results, cheapestProvider }: { results: CompareArchitectureResult[], cheapestProvider: string }) {
@@ -125,6 +190,7 @@ export function CompareView({ results }: { results: CompareArchitectureResult[] 
         <h2 className="text-2xl font-bold text-gray-900">Resumo da Comparação Multi-Cloud</h2>
       </div>
 
+      <CostBarChart results={validResults} cheapestProvider={cheapestProvider} />
       <ComparisonSummary results={validResults} cheapestProvider={cheapestProvider} />
 
       {validResults.length > 0 && (
